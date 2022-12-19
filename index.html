@@ -1,0 +1,49 @@
+<html style="background-color:black;">
+<style>button{border:none;background-color:black;color:white;}</style>
+<div contenteditable="true" id="main" spellcheck="false" style="border: 5px solid black;font-family:monospace; width: 100%; height: 100%;outline: none;background-color:#000;color:00FF00;" autofocus></div>
+<title>HTML</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-language_tools.min.js"></script>
+<script>
+    var editor = ace.edit("main");
+    editor.setTheme("ace/theme/ambiance");
+    editor.session.setMode("ace/mode/html");
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true
+    });
+    function run(){
+        let blob = new Blob([editor.getValue()], {type: 'text/html'});
+        var n = window.URL.createObjectURL(blob);
+        window.open(n);
+        window.URL.revokeObjectURL(n)
+    }
+    function save(){
+        window.open().document.write('data:text/html,' + escape(editor.getValue()));
+    }
+    function save64(){
+        window.open().document.write('data:text/html;base64,' + btoa(editor.getValue()));
+    }
+    function savefile(){
+        let link = document.createElement('a');
+        var name = prompt('What do want the file to be called? (include file format) Ex:index.html');
+        link.download = name;
+        let blob = new Blob([editor.getValue()], {type: 'text/html'});
+        link.href = window.URL.createObjectURL(blob);
+        link.click();
+        window.URL.revokeObjectURL(link.href);
+    }
+</script>
+<button onclick="run()">Run (open new tab with code)</button>
+<button onclick="save()">Save as data URL</button>
+<button onclick="save64()">Save as base64 data URL</button>
+<button onclick="savefile()">Save as file</button>
+<button onclick="editor.setValue(unescape(prompt('Paste here').substring(15)));">Import code from Data URL</button>
+<button onclick="editor.setValue(unescape(atob(prompt('Paste here').substring(22))));">Import From Base64 encoded Data URL</button>
+<script>
+//close prevention for accidental reloads or closes
+window.addEventListener('beforeunload', function(e){
+    e.preventDefault();
+    e.returnValue = '';
+});
+</script></html>
